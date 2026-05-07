@@ -1,101 +1,135 @@
-import Image from "next/image";
+import ChatWindow from '@/components/ChatWindow'
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div
+      className="relative flex flex-col h-screen w-screen overflow-hidden"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
+    >
+      {/* 环境光晕 */}
+      <div
+        className="ambient-glow"
+        style={{
+          top: '-10%',
+          left: '-10%',
+          width: '480px',
+          height: '480px',
+          background: 'radial-gradient(circle, rgba(0,245,255,0.35), transparent 70%)',
+          animationDelay: '0s',
+        }}
+      />
+      <div
+        className="ambient-glow"
+        style={{
+          bottom: '-15%',
+          right: '-10%',
+          width: '560px',
+          height: '560px',
+          background: 'radial-gradient(circle, rgba(0,128,255,0.35), transparent 70%)',
+          animationDelay: '-3s',
+        }}
+      />
+      <div
+        className="ambient-glow"
+        style={{
+          top: '40%',
+          right: '20%',
+          width: '320px',
+          height: '320px',
+          background: 'radial-gradient(circle, rgba(255,0,60,0.18), transparent 70%)',
+          animationDelay: '-6s',
+        }}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* Header */}
+      <header
+        className="relative z-20 flex items-center justify-between px-6 flex-shrink-0"
+        style={{
+          height: '64px',
+          background: 'rgba(2, 4, 8, 0.92)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderBottom: '1px solid var(--border-glow)',
+        }}
+      >
+        {/* 左侧 Logo */}
+        <div className="flex items-center gap-3">
+          {/* 六边形图标 */}
+          <div
+            className="hex flex-shrink-0 flex items-center justify-center"
+            style={{
+              width: '36px',
+              height: '36px',
+              background:
+                'linear-gradient(135deg, rgba(0,245,255,0.25), rgba(0,128,255,0.15))',
+              border: '1px solid var(--neon-cyan)',
+              boxShadow: 'var(--glow-soft)',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <span
+              className="status-dot"
+              style={{ width: '6px', height: '6px' }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* 文字 Logo */}
+          <div className="flex flex-col">
+            <span
+              className="font-display typing-title glow-text"
+              style={{
+                fontSize: '1.05rem',
+                fontWeight: 900,
+                color: 'var(--neon-cyan)',
+                letterSpacing: '0.18em',
+              }}
+            >
+              [POLICY.AI]
+            </span>
+            <span
+              className="font-mono"
+              style={{
+                fontSize: '0.62rem',
+                color: 'var(--text-muted)',
+                letterSpacing: '0.15em',
+                marginTop: '-2px',
+              }}
+            >
+              POLICY INTELLIGENCE SYSTEM
+            </span>
+          </div>
         </div>
+
+        {/* 右侧状态指示 */}
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2 font-mono"
+            style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', letterSpacing: '0.1em' }}>
+            <span style={{ color: 'var(--text-muted)' }}>NODE://</span>
+            <span style={{ color: 'var(--neon-cyan)' }}>BEIJING-01</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="status-dot" />
+            <span
+              className="font-mono glow-text-green"
+              style={{
+                fontSize: '0.72rem',
+                color: 'var(--neon-green)',
+                letterSpacing: '0.12em',
+                fontWeight: 500,
+              }}
+            >
+              SYSTEM ONLINE
+            </span>
+          </div>
+        </div>
+
+        {/* 底部流光 */}
+        <div className="flow-line" />
+      </header>
+
+      {/* 主体 */}
+      <main className="relative z-10 flex-1 overflow-hidden w-full max-w-4xl mx-auto px-2 sm:px-4">
+        <ChatWindow />
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
