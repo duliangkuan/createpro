@@ -12,6 +12,22 @@ const client = new OpenAI({
 
 const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY! })
 
+/**
+ * 判断用户最新输入是否是"政策相关问题"。
+ * 是 → 强制 DeepSeek 调用 search_policy，保证每次回答都有来源。
+ * 否（纯打招呼、太短等）→ 走 auto，避免无意义检索。
+ */
+function isPolicyQuestion(text: string | undefined | null): boolean {
+  if (!text) return false
+  const t = text.trim()
+  if (t.length < 4) return false
+  if (!/[\u4e00-\u9fa5]/.test(t)) return false
+  const trivial =
+    /^(你好|您好|hi|hello|嗨|哈喽|早上好|中午好|下午好|晚上好|在吗|谢谢|多谢|感谢|好的|ok|test|测试|再见|拜拜)[\s！!。.?？，,~]*$/i
+  if (trivial.test(t)) return false
+  return true
+}
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json()
@@ -21,13 +37,19 @@ export async function POST(req: Request) {
       ...messages,
     ]
 
-    // 第一轮：让 DeepSeek 决定是否需要搜索
+    // 取最后一条 user 消息用于启发式判断
+    const lastUser = [...messages]
+      .reverse()
+      .find((m: { role: string; content: string }) => m.role === 'user')
+    const forceSearch = isPolicyQuestion(lastUser?.content)
+
+    // 第一轮：政策相关问题强制调用工具；纯寒暄走 auto
     // max_tokens 给到模型上限 8192，避免不调用工具直接作答时被截断
     const firstResponse = await client.chat.completions.create({
       model: 'deepseek-chat',
       messages: allMessages,
       tools: [searchTool],
-      tool_choice: 'auto',
+      tool_choice: forceSearch ? 'required' : 'auto',
       max_tokens: 8192,
     })
 
