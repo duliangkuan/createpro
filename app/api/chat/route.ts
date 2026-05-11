@@ -72,25 +72,44 @@ export async function POST(req: Request) {
         let searchContent = '搜索失败：未获取到有效结果'
         if (query) {
           try {
-            const searchResult = await tvly.search(query, {
-              maxResults: 5,
-              includeDomains: [
-                'gov.cn',
-                'npc.gov.cn',
-                'miit.gov.cn',
-                'most.gov.cn',
-                'cac.gov.cn',
-                'lawinfochina.com',
-                'pkulaw.com',
-              ],
-              includeAnswer: true,
-            })
+            // 第一轮：限定权威政府/法律站点
+            const PRIMARY_DOMAINS = [
+              'gov.cn',
+              'npc.gov.cn',
+              'miit.gov.cn',
+              'most.gov.cn',
+              'cac.gov.cn',
+              'ndrc.gov.cn',
+              'mof.gov.cn',
+              'samr.gov.cn',
+              'beijing.gov.cn',
+              'sh.gov.cn',
+              'sz.gov.cn',
+              'gd.gov.cn',
+              'lawinfochina.com',
+              'pkulaw.com',
+              'chinalaw.gov.cn',
+            ]
 
-            const results = (searchResult?.results ?? []) as {
-              title: string
-              url: string
-              content: string
-            }[]
+            let results: { title: string; url: string; content: string }[] = []
+
+            const primary = await tvly.search(query, {
+              maxResults: 8,
+              includeDomains: PRIMARY_DOMAINS,
+              includeAnswer: true,
+              searchDepth: 'advanced',
+            })
+            results = (primary?.results ?? []) as typeof results
+
+            // 回落：限定域名 0 命中时，放开域名再搜一次，至少给用户拿回链接
+            if (results.length === 0) {
+              const fallback = await tvly.search(query, {
+                maxResults: 8,
+                includeAnswer: true,
+                searchDepth: 'advanced',
+              })
+              results = (fallback?.results ?? []) as typeof results
+            }
 
             if (results.length > 0) {
               sources.push(
@@ -108,7 +127,7 @@ export async function POST(req: Request) {
                 )
                 .join('\n\n---\n\n')
             } else {
-              searchContent = `搜索关键词「${query}」未在指定政府/法律站点中找到结果，请基于已有知识谨慎回答，并提示用户去官网核验。`
+              searchContent = `搜索关键词「${query}」未找到结果，请基于已有知识谨慎回答，并明确提示用户去官网核验。`
             }
           } catch (e) {
             console.error('Tavily 搜索失败:', e)

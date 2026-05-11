@@ -1,6 +1,7 @@
 'use client'
 
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import SourceCard from './SourceCard'
 
 interface Source {
@@ -48,7 +49,9 @@ export default function MessageBubble({ message }: { message: Message }) {
         style={{ borderColor: 'var(--border)' }}
       >
         <div className="markdown-body">
-          <ReactMarkdown>{message.content || ' '}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.content || ' '}
+          </ReactMarkdown>
         </div>
         {message.sources && message.sources.length > 0 && (
           <SourceCard sources={message.sources} />
