@@ -3,7 +3,7 @@ import { tavily } from '@tavily/core'
 import { searchTool, SYSTEM_PROMPT } from '@/lib/tools'
 
 export const runtime = 'nodejs'
-export const maxDuration = 30
+export const maxDuration = 60
 
 const client = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
@@ -22,12 +22,13 @@ export async function POST(req: Request) {
     ]
 
     // 第一轮：让 DeepSeek 决定是否需要搜索
+    // max_tokens 给到模型上限 8192，避免不调用工具直接作答时被截断
     const firstResponse = await client.chat.completions.create({
       model: 'deepseek-chat',
       messages: allMessages,
       tools: [searchTool],
       tool_choice: 'auto',
-      max_tokens: 1000,
+      max_tokens: 8192,
     })
 
     const firstChoice = firstResponse.choices[0]
@@ -96,14 +97,14 @@ export async function POST(req: Request) {
                 ...results.map((r) => ({
                   title: r.title,
                   url: r.url,
-                  content: (r.content ?? '').slice(0, 300),
+                  content: (r.content ?? '').slice(0, 800),
                 }))
               )
 
               searchContent = results
                 .map(
                   (r, i) =>
-                    `[${i + 1}] 标题：${r.title}\n来源：${r.url}\n内容：${(r.content ?? '').slice(0, 500)}`
+                    `[${i + 1}] 标题：${r.title}\n来源：${r.url}\n内容：${r.content ?? ''}`
                 )
                 .join('\n\n---\n\n')
             } else {
@@ -124,11 +125,12 @@ export async function POST(req: Request) {
     }
 
     // 最终流式输出
+    // 用 DeepSeek-chat 模型的输出上限 8192 tokens，避免长答案被截断
     const stream = await client.chat.completions.create({
       model: 'deepseek-chat',
       messages: finalMessages,
       stream: true,
-      max_tokens: 2000,
+      max_tokens: 8192,
     })
 
     // 创建 ReadableStream

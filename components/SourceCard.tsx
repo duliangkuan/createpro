@@ -9,45 +9,15 @@ export default function SourceCard({ sources }: { sources: Source[] }) {
 
   return (
     <div
-      className="mt-4 pt-3"
-      style={{
-        borderTop: '1px dashed rgba(0, 245, 255, 0.2)',
-      }}
+      className="mt-3 pt-3 border-t"
+      style={{ borderColor: 'var(--border)' }}
     >
-      {/* 标题栏 */}
-      <div className="flex items-center gap-2 mb-2">
-        <span
-          className="font-mono"
-          style={{
-            fontSize: '0.66rem',
-            color: 'var(--neon-cyan)',
-            letterSpacing: '0.15em',
-            fontWeight: 600,
-          }}
-        >
-          ─── REFERENCES
-        </span>
-        <span
-          className="font-mono"
-          style={{
-            fontSize: '0.62rem',
-            color: 'var(--text-muted)',
-            letterSpacing: '0.1em',
-          }}
-        >
-          [{sources.length} SOURCE{sources.length > 1 ? 'S' : ''} INDEXED]
-        </span>
-        <div
-          className="flex-1"
-          style={{
-            height: '1px',
-            background:
-              'linear-gradient(90deg, rgba(0,245,255,0.3), transparent)',
-          }}
-        />
-      </div>
-
-      {/* 来源列表 */}
+      <p
+        className="text-xs mb-2 font-medium"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        参考来源
+      </p>
       <div className="flex flex-col gap-2">
         {sources.map((source, i) => (
           <a
@@ -55,95 +25,58 @@ export default function SourceCard({ sources }: { sources: Source[] }) {
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="scan-card group relative block rounded-md p-2.5 transition-all duration-200"
-            style={{
-              background: 'rgba(0, 10, 20, 0.6)',
-              border: '1px solid rgba(0, 245, 255, 0.15)',
-              borderLeft: '2px solid var(--neon-green)',
-              textDecoration: 'none',
-            }}
+            className="flex items-start gap-2 p-2 rounded-lg transition-colors group"
+            style={{ backgroundColor: '#eef3fb' }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 136, 0.5)'
-              e.currentTarget.style.borderLeftColor = 'var(--neon-green)'
-              e.currentTarget.style.boxShadow =
-                '0 0 12px rgba(0, 255, 136, 0.25)'
+              e.currentTarget.style.backgroundColor = '#dde7f5'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(0, 245, 255, 0.15)'
-              e.currentTarget.style.borderLeftColor = 'var(--neon-green)'
-              e.currentTarget.style.boxShadow = 'none'
+              e.currentTarget.style.backgroundColor = '#eef3fb'
             }}
           >
-            <div className="flex items-start gap-3">
-              {/* REF 序号 */}
+            <div
+              className="flex-shrink-0 w-5 h-5 rounded flex items-center justify-center mt-0.5"
+              style={{ backgroundColor: '#c4d4ea' }}
+            >
               <span
-                className="font-display flex-shrink-0"
-                style={{
-                  fontSize: '0.62rem',
-                  color: 'var(--neon-green)',
-                  letterSpacing: '0.1em',
-                  fontWeight: 700,
-                  marginTop: '1px',
-                  textShadow: '0 0 4px rgba(0,255,136,0.4)',
-                }}
+                className="text-xs font-bold"
+                style={{ color: 'var(--primary)' }}
               >
-                [REF.{String(i + 1).padStart(2, '0')}]
-              </span>
-
-              <div className="flex-1 min-w-0">
-                {/* 标题 */}
-                <p
-                  className="truncate"
-                  style={{
-                    fontSize: '0.78rem',
-                    fontWeight: 500,
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {source.title}
-                </p>
-                {/* URL（终端绿色） */}
-                <p
-                  className="font-mono truncate mt-0.5 group-hover:opacity-100"
-                  style={{
-                    fontSize: '0.66rem',
-                    color: 'var(--neon-green)',
-                    letterSpacing: '0.02em',
-                    opacity: 0.7,
-                  }}
-                >
-                  ↳ {source.url}
-                </p>
-              </div>
-
-              {/* 外链图标 */}
-              <span
-                className="font-mono flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{
-                  fontSize: '0.7rem',
-                  color: 'var(--neon-cyan)',
-                  marginTop: '1px',
-                }}
-              >
-                ↗
+                {i + 1}
               </span>
             </div>
+            <div className="flex-1 min-w-0">
+              <p
+                className="text-xs font-medium truncate"
+                style={{ color: 'var(--primary)' }}
+              >
+                {source.title || '未命名来源'}
+              </p>
+              <p
+                className="text-xs truncate mt-0.5"
+                style={{ color: 'var(--primary-light)' }}
+              >
+                {source.url}
+              </p>
+            </div>
+            <svg
+              className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity mt-1"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: 'var(--primary-light)' }}
+            >
+              <path d="M7 17L17 7" />
+              <path d="M7 7h10v10" />
+            </svg>
           </a>
         ))}
       </div>
-
-      {/* 底部 */}
-      <p
-        className="font-mono mt-2"
-        style={{
-          fontSize: '0.6rem',
-          color: 'var(--text-muted)',
-          letterSpacing: '0.1em',
-        }}
-      >
-        // EOF · 数据来源以官网为准
-      </p>
     </div>
   )
 }
