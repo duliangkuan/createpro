@@ -49,7 +49,22 @@ export default function MessageBubble({ message }: { message: Message }) {
         style={{ borderColor: 'var(--border)' }}
       >
         <div className="markdown-body">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ href, children, ...props }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--primary)', textDecoration: 'underline' }}
+                  {...props}
+                >
+                  {children}
+                </a>
+              ),
+            }}
+          >
             {message.content || ' '}
           </ReactMarkdown>
         </div>
